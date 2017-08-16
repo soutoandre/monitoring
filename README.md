@@ -1,9 +1,8 @@
-#  Monitoramento PostgreSQL
+## Monitoring  Database Mysql, PostgreSQL  and Server
 
-## Introdução
+# Docker image: 
+  - docker pull prom/prometheus
 
+# Storage retation prometheus = 720hs
 
-
-
-
-```
+# Playbook install Grafana

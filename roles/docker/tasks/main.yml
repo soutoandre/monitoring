@@ -1,0 +1,58 @@
+---
+- name: Install repo  docker-ce
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+  tags:
+    - docker
+
+
+- name:  Install docker-ce
+  yum: name={{ item }}  state=present
+  with_items:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - docker-ce
+    - python-dockerpty
+    - python-docker-py
+    - python-docker-pycreds
+  tags:
+    - docker
+
+- name:  Start | Enable
+  service: name=docker  state=started enabled=yes
+  tags:
+    - docker
+
+- name: Create Docker directory proxy
+  file: path=/etc/systemd/system/docker.service.d state=directory
+  tags:
+   - docker
+- name: Conf proxy to docker
+  template: src=http-proxy.conf.j2 dest=/etc/systemd/system/docker.service.d/http-proxy.conf owner=root group=root  mode=640
+  notify: systemctl daemon-reload
+  tags: 
+   - docker
+
+
+- name: Config Prometheus
+  template: src=prometheus.yml  dest=/dados/prometheus/conf/prometheus.yml owner=root group=root  mode=755
+  notify:  restart prometheus
+  tags:
+   - docker
+
+- name: launch Prometheus Container
+  docker_container:
+    name: prometheus
+    image: prom/prometheus
+    ports: 
+      - 9090:9090
+    volumes:
+      - /dados/prometheus:/prometheus
+      - /dados/prometheus/conf/:/etc/prometheus
+    entrypoint:
+      - /bin/prometheus
+    command: [ "-config.file=/etc/prometheus/prometheus.yml", "-storage.local.retention=720h" ]
+  tags:
+     - docker

@@ -1,0 +1,6 @@
+[grafana]
+server.exemplo.com.br
+
+[grafana:vars]
+token= include token
+service_grafana=grafana-infra

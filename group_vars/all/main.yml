@@ -1,0 +1,12 @@
+---
+ldap_server: 10.64.x.x
+ldap_bind_dn: CN=svc.grafana_infa,OU=contas servico,DC=exemplo,DC=com,DC=br
+ldap_passwd_bind:  passwd
+ldap_filter: sAMAccountName=%s
+servers_group_mapping: CN=group_admin,OU=GRUPOS,OU=TS,DC=exemplo,DC=com,DC=br
+bindpassword: password
+auth_ldap: true
+on_smtp: true
+host_relay: relay.exemplo:25
+grafana_backup_enable: false
+ldap_dns: dc=exemplo,dc=com,dc=br

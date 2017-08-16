@@ -1,0 +1,51 @@
+---
+- name: create  repo grafana
+  copy: src=grafana.repo dest=/etc/yum.repos.d/grafana.repo state=file owner=root group=root mode=755
+  tags: 
+    - grafana
+
+- name: Create data directory  dados
+  file: path=/dados/{{ item }}  state=directory  owner=root group=root mode=755
+  with_items:
+    - grafana
+    - prometheus
+    
+  tags:
+    - grafana
+
+
+- name: Install Grafana
+  yum: name={{ item }} state=present
+  with_items:
+    - python34-setuptools
+    - grafana
+  tags:
+    - grafana
+
+- name: Install pip3
+  command: "{{ item }}" 
+  with_items:
+    -  easy_install-3.4 pip 
+    -  pip3 install grafcli 
+  tags:
+    - grafana
+
+- name: Config grafana
+  template: src={{ item.name }} dest=/etc/grafana/{{ item.dest }}  owner=root group=root mode=0644
+  with_items:
+    - { name: 'grafana.ini.j2', dest: 'grafana.ini' }
+    - { name: 'ldap.toml.j2'  , dest: 'ldap.toml'  }
+  tags:
+    - grafana
+
+- name: Conf Grafcli
+  template: src=grafcli.conf.j2  dest=/etc/grafcli/grafcli.conf  
+  tags:
+    - grafana
+
+- name: Backup Dashboard Grafana
+  command: grafcli backup remote/localhost /dados/backup/grafcli/backups/backup{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}.tgz
+  when: grafana_backup_enable
+  tags:
+   - grafana_bkp_dash
+

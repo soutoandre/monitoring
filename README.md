@@ -8,6 +8,9 @@
 # Playbook install Grafana
 
 
-# Backup Dashboard Grafana
+ Backup Dashboard Grafana
    - Create token 
-      - url -X POST -H "Content-Type: application/json" -d '{"name":"apikeycurl", "role": "Admin"}' http://admin:password@grafana-infra.exemplo.com.br:3000/api/auth/keys
+      - curl -X POST -H "Content-Type: application/json" -d '{"name":"apikeycurl", "role": "Admin"}' http://admin:password@grafana-infra.exemplo.com.br:3000/api/auth/keys
+
+
+![Grafana dash]()
